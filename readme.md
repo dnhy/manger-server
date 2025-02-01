@@ -1,0 +1,22 @@
+## 启动mongodb
+sudo mongod -f /usr/local/etc/mongod.conf
+
+## 配置文件
+```
+// mongod.conf
+net:
+  port: 27017
+storage:
+  dbPath: "/usr/local/data/db"
+processManagement:
+  fork: true
+systemLog:
+    path: "/usr/local/data/log/mongo.log"
+    destination: file
+    logAppend: true
+    quiet: false
+```
+
+## mongoose查询结果对象
+对象类型是document，不是普通的js对象，无法直接新增属性。
+https://blog.csdn.net/weixin_39818813/article/details/126689641

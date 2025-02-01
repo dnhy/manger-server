@@ -1,5 +1,14 @@
 const log4js = require("log4js");
 
+const levels = {
+  trace: log4js.levels.TRACE,
+  debug: log4js.levels.DEBUG,
+  info: log4js.levels.INFO,
+  warn: log4js.levels.WARN,
+  error: log4js.levels.ERROR,
+  fatal: log4js.levels.FATAL,
+};
+
 log4js.configure({
   appenders: {
     console: {
@@ -22,18 +31,18 @@ log4js.configure({
 
 exports.debug = (content) => {
   const logger = log4js.getLogger();
-  logger.level = "debug"; //定义会打印的日志的最低等级
+  logger.level = levels.debug; //定义会打印的日志的最低等级
   logger.debug(content);
 };
 
 exports.error = (content) => {
   const logger = log4js.getLogger("error");
-  logger.level = "error";
+  logger.level = levels.error;
   logger.error(content);
 };
 
 exports.info = (content) => {
   const logger = log4js.getLogger();
-  logger.level = "info";
+  logger.level = levels.info;
   logger.info(content);
 };

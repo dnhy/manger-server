@@ -54,7 +54,7 @@ app.use(async (ctx, next) => {
 });
 
 // 中间件，验证token
-app.use(koaJwt({ secret: SECRET }).unless({ path: [/\/login/] }));
+app.use(koaJwt({ secret: SECRET }).unless({ path: [/\/login/, /\/regist/] }));
 // routes
 // router.prefix("/api");
 

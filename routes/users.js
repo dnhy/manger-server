@@ -1,5 +1,6 @@
 const router = require("koa-router")();
 const User = require("../models/userSchema");
+const Counter = require("../models/counterSchema");
 const Util = require("../utils/util");
 const jwt = require("jsonwebtoken");
 const md5 = require("md5");
@@ -44,13 +45,56 @@ router.post("/login", async (ctx) => {
 
     if (result) {
       const res = result.toObject();
-      const token = jwt.sign({ data: res }, SECRET, { expiresIn: 3 });
+      const token = jwt.sign({ data: res }, SECRET, { expiresIn: "1d" });
       ctx.body = Util.success({ token }, "登录成功");
     } else {
       ctx.body = Util.fail(result, "账号或秘密不正确", Util.CODE.AUTH_ERROR);
     }
   } catch (error) {
     ctx.body = Util.fail("", error);
+  }
+});
+
+router.post("/regist", async (ctx) => {
+  const { userName, userPwd, userEmail } = ctx.request.body;
+  console.log("userName :", userName, userEmail);
+  if (!userName || !userPwd || !userEmail) {
+    ctx.body = Util.fail("", "参数错误", Util.CODE.PARAM_ERROR);
+    return;
+  }
+
+  const res = await User.findOne(
+    { $or: [{ userName }, { userEmail }] },
+    "_id userName userEmail"
+  );
+
+  if (res) {
+    ctx.body = Util.fail(
+      {},
+      `系统检测到重复用户，信息如下：${res.userName} - ${res.userEmail}`
+    );
+    return;
+  }
+
+  try {
+    const doc = await Counter.findOneAndUpdate(
+      { _id: "userId" },
+      { $inc: { sequence_value: 1 } },
+      { new: true }
+    );
+
+    const user = new User({
+      userId: doc.sequence_value,
+      userName,
+      userPwd: md5(userPwd),
+      userEmail,
+    });
+
+    user.save();
+
+    ctx.body = Util.success("", "注册成功！");
+  } catch (error) {
+    ctx.body = Util.fail(error, "注册失败！");
   }
 });
 

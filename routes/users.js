@@ -35,7 +35,7 @@ router.get("/getUserInfo2", async (ctx) => {
 router.get("/refresh", async (ctx) => {
   try {
     const token = ctx.request.headers.authorization.split(" ")[1];
-    const payload = jwt.verify(token, SECRET);
+    const payload = jwt.verify(token, SECRETREFRESH);
     if (payload) {
       const { _id, userName, userEmail } = payload;
       const { token, refreshToken } = Util.generateToken(

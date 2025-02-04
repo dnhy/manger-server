@@ -1,4 +1,6 @@
 const log4js = require("./log4j");
+const jwt = require("jsonwebtoken");
+
 const CODE = {
   SUCCESS: 200,
   PARAM_ERROR: 10001, // 参数错误
@@ -37,4 +39,20 @@ module.exports = {
     };
   },
   CODE,
+  generateToken(
+    payload = {},
+    secret,
+    sectRef,
+    expiresIn = "1h",
+    expiresInRefresh = "1d"
+  ) {
+    console.log("payload :", payload);
+
+    const token = jwt.sign(payload, secret, { expiresIn });
+    const refreshToken = jwt.sign(payload, sectRef, {
+      expiresIn: expiresInRefresh,
+    });
+
+    return { token, refreshToken };
+  },
 };

@@ -21,7 +21,7 @@ require("./config/db");
 app.use(
   cors({
     origin: function (ctx) {
-      let url = ctx.header.referer.substr(0, ctx.header.referer.length - 1);
+      let url = ctx.header?.referer?.substr(0, ctx.header.referer.length - 1);
       const domin = url?.split("/")[2]?.split(":")[0];
 
       if (whiteList.includes(domin)) {
@@ -74,7 +74,11 @@ app.use(async (ctx, next) => {
 });
 
 // 中间件，验证token
-app.use(koaJwt({ secret: SECRET }).unless({ path: [/\/login/, /\/regist/] }));
+app.use(
+  koaJwt({ secret: SECRET }).unless({
+    path: [/\/login/, /\/regist/, /\/refresh/],
+  })
+);
 // routes
 // router.prefix("/api");
 

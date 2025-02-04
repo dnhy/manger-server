@@ -20,3 +20,7 @@ systemLog:
 ## mongoose查询结果对象
 对象类型是document，不是普通的js对象，无法直接新增属性。
 https://blog.csdn.net/weixin_39818813/article/details/126689641
+
+## mongodb启动之后无法访问
+需要开放服务器自带的ufw防火墙，腾讯云防火墙，配置bindIp:All
+https://blog.csdn.net/wuyanshen2012/article/details/77198644

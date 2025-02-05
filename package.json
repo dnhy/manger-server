@@ -25,7 +25,10 @@
     "log4js": "^6.9.1",
     "md5": "^2.3.0",
     "mongoose": "^8.9.5",
-    "pug": "^2.0.3"
+    "nodemailer": "^6.10.0",
+    "pug": "^2.0.3",
+    "svg-captcha": "^1.4.0",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"

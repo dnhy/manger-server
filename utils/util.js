@@ -56,4 +56,17 @@ module.exports = {
 
     return { token, refreshToken };
   },
+  testEmail(email) {
+    var reg = /^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/;
+
+    return reg.test(email);
+  },
+  // 随机字符串
+  randomString(length) {
+    const chars = "0123456789";
+    let result = "";
+    for (let i = length; i > 0; --i)
+      result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+  },
 };

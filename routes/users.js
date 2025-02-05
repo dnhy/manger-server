@@ -4,6 +4,9 @@ const Counter = require("../models/counterSchema");
 const Util = require("../utils/util");
 const jwt = require("jsonwebtoken");
 const md5 = require("md5");
+const { uuid } = require("uuidv4");
+const { sendEmail } = require("../utils/sendEmail");
+const { captchaMap, genSvgCaptcha } = require("../utils/svgCaptcha");
 
 const { SECRET, SECRETREFRESH } = require("../config/options");
 
@@ -131,4 +134,66 @@ router.post("/regist", async (ctx) => {
   }
 });
 
+router.get("/getValidateImg", (ctx) => {
+  const { data, key } = genSvgCaptcha();
+
+  ctx.set("Cache-Control", "no-store");
+  ctx.set("Pragma", "no-cache");
+  // ctx.set("Content-Type", "image/svg+xml");
+  const obj = {
+    captchaEnabled: true, // 是否开启验证码
+    img: data,
+    uuid: uuid(),
+  };
+
+  ctx.body = Util.success(obj, "获取图形验证码成功!");
+
+  // 将验证码图片返回给客户端
+  ctx.cookies.set("captcha_key", key, {
+    maxAge: 1000 * 60 * 60,
+    httpOnly: true,
+  }); // 将key存储到cookie中，供后续验证使用
+});
+
+router.get("/sendEmailCode/:vcode", async (ctx) => {
+  const { vcode } = ctx.params;
+  const { email } = ctx.query;
+
+  if (!email) {
+    ctx.body = Util.fail("", "请输入邮箱");
+
+    return;
+  }
+  if (!Util.testEmail(email)) {
+    ctx.body = Util.fail("", "邮箱格式不正确");
+
+    return;
+  }
+
+  if (!vcode) {
+    ctx.body = Util.fail("", "请输入验证码");
+
+    return;
+  }
+
+  const captchaKey = ctx.cookies.get("captcha_key");
+  const storedCaptcha = captchaMap.get(captchaKey);
+
+  if (storedCaptcha?.toLowerCase() !== vcode?.toLowerCase()) {
+    ctx.body = Util.fail("", "图形验证码错误!");
+    return;
+  }
+  const code = Util.randomString(4);
+  const content = `<p>重置密码的验证码为：<span style="color:lightskyblue;font-size:20px">${code}</span><p>`;
+  try {
+    await sendEmail(email, "安全认证", content);
+    ctx.body = Util.success("", "验证码已发送到您的邮箱!");
+  } catch (error) {
+    ctx.body = Util.fail(error, "验证码发送失败!");
+  }
+});
+
 module.exports = router;
+
+// 授权码
+// xafeukwkmovagehc

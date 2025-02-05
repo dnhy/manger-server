@@ -76,7 +76,13 @@ app.use(async (ctx, next) => {
 // 中间件，验证token
 app.use(
   koaJwt({ secret: SECRET }).unless({
-    path: [/\/login/, /\/regist/, /\/refresh/],
+    path: [
+      /\/login/,
+      /\/regist/,
+      /\/refresh/,
+      /\/getValidateImg/,
+      /\/sendEmailCode/,
+    ],
   })
 );
 // routes
